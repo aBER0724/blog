@@ -2,4 +2,10 @@
 lang: en
 ---
 
-Retypeset is a static blog theme based on the [Astro](https://astro.build/) framework. Inspired by [Typography](https://astro-theme-typography.vercel.app/), Retypeset establishes a new visual standard and reimagines the layout of all pages, creating a reading experience reminiscent of paper books, reviving the beauty of typography. Details in every sight, elegance in every space.
+Here is aBER.
+
+My major is Infomation Security. I am preparing for the Japanese graduate school (master's) entrance examination. Meantime, I'm learning japanese for JLPT N2.
+
+Thanks to those who subscribe to my blog.
+
+If you want to get in touch with me about something or just to say hi, reach out on social media or send me an email.
