@@ -1,6 +1,6 @@
 export const ui = {
   'zh': {
-    title: 'aBER的博客',
+    title: 'aBER\'s Blog',
     subtitle: '个人博客 & 学习笔记',
     description: 'aBER的博客是一个个人博客和学习笔记。',
     posts: '文章',
@@ -9,7 +9,7 @@ export const ui = {
     toc: '目录',
   },
   'ja': {
-    title: 'aBERのブログ',
+    title: 'aBER\'s Blog',
     subtitle: '個人ブログ & 学習ノート',
     description: 'aBERのブログは個人ブログと学習ノートです。',
     posts: '記事',
