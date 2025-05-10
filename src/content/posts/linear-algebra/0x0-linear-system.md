@@ -394,7 +394,7 @@ $$
 
 向量集合 $\{ \boldsymbol{u}_1, \boldsymbol{u}_2, \cdots, \boldsymbol{u}_k\}$.
 
-$\boldsymbol{v} = c_1\boldsymbol{u}_1 + c_2\boldsymbol{u}_2 + \cdots +c_k\boldsymbol{u}_k$ 称为**线性组合**.  
+$\boldsymbol{v} = c_1\boldsymbol{u}_1 + c_2\boldsymbol{u}_2 + \cdots +c_k\boldsymbol{u}_k$ 称为**线性组合**, 记为 $Ax =b$.  
 
 $c_1, c_2, \cdots, c_k$ 是 coefficients.  
 相当于向量与矩阵相乘.
@@ -485,3 +485,51 @@ $$
 $$
 
 $b$ 可以通过线性组合得到, 所以方程组有解.
+
+## 张成空间 Span  
+
+$S = \{ \boldsymbol{u}_1, \boldsymbol{u}_2, \cdots, \boldsymbol{u}_k \}$  
+Span $S$ 是所有线性组合的集合, 即 $Span S = \{ c_1\boldsymbol{u}_1 + c_2\boldsymbol{u}_2 + \cdots + c_k\boldsymbol{u}_k | for all c_1,c_2,\cdots,c_k \}$  
+
+$S_1 =\{
+\begin{bmatrix}
+   1 \\ -1
+\end{bmatrix}
+\}
+$
+
+$
+Span \ S_1 = \{
+\begin{bmatrix}
+   1 \\ -1
+\end{bmatrix},
+\begin{bmatrix}
+   2 \\ -2
+\end{bmatrix},
+\begin{bmatrix}
+   -1 \\ 1
+\end{bmatrix},
+\cdots
+\}
+$
+
+> $Span \ S_1$ 中有无穷多的向量, 但这些向量都落在同一个二维的直线上.
+
+$S$ 中含有超过两个非平行的向量, 就可以组合得到所有向量, 即 $Span \ S = \mathcal{R}^2$.
+
+$S = \{ \boldsymbol{u}_1, \boldsymbol{u}_2, \cdots, \boldsymbol{u}_k, \boldsymbol{v} \}$  
+$S' = \{ \boldsymbol{u}_1, \boldsymbol{u}_2, \cdots, \boldsymbol{u}_k \}$  
+$Span \ S = Span \ S'$, 则 $\boldsymbol{v}$ 是冗余的, 没有贡献的. $\boldsymbol{v}$ 是其他元素的线性组合.
+
+## 独立&非独立 Independent & Dependent
+
+1. 非独立 Dependent
+   $\{ \boldsymbol{a}_1, \boldsymbol{a}_2, \cdots, \boldsymbol{a}_n \}$ 是线性非独立的. 即向量集合中存在多余元素.  
+   > 存在 $x_1\boldsymbol{a}_1 + x_2\boldsymbol{a}_2 + \cdots + x_n\boldsymbol{a}_n = 0$
+
+2. 独立 Independent
+   $\{ \boldsymbol{a}_1, \boldsymbol{a}_2, \cdots, \boldsymbol{a}_n \}$ 是线性独立的.  
+   > $x_1\boldsymbol{a}_1 + x_2\boldsymbol{a}_2 + \cdots + x_n\boldsymbol{a}_n = 0$, 当且仅当 $x_1=x_2=\cdots=x_n=0$ 才满足.  
+   > 当集合中存在零向量是, 这个集合一定是非独立的. 因为零向量的系数可取任意值, 不满足独立的条件.
+
+3. 在方程组有解的情况下, 独立的集合存在**唯一解**, 非独立的集合存在**无穷多解**.
