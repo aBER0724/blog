@@ -489,7 +489,7 @@ $b$ 可以通过线性组合得到, 所以方程组有解.
 ## 张成空间 Span  
 
 $S = \{ \boldsymbol{u}_1, \boldsymbol{u}_2, \cdots, \boldsymbol{u}_k \}$  
-Span $S$ 是所有线性组合的集合, 即 $Span S = \{ c_1\boldsymbol{u}_1 + c_2\boldsymbol{u}_2 + \cdots + c_k\boldsymbol{u}_k | for all c_1,c_2,\cdots,c_k \}$  
+$Span \ S$ 是所有线性组合的集合, 即 $Span \ S = \{ c_1\boldsymbol{u}_1 + c_2\boldsymbol{u}_2 + \cdots + c_k\boldsymbol{u}_k | for \ all \ c_1,c_2,\cdots,c_k \}$  
 
 $S_1 =\{
 \begin{bmatrix}
