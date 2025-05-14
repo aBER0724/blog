@@ -716,15 +716,23 @@ A =
 1 & 2 & -1 & 2 & 1 & 2 \\
 -1 & -2 & 1 & 2 & 3 & 6 \\
 2 & 4 & -3 & 2 & 0 & 3 \\
--3 & -6 & 2 & 0 & 3 & 9 \end{bmatrix} \qquad
+-3 & -6 & 2 & 0 & 3 & 9
+\end{bmatrix} \qquad
 R =
 \begin{bmatrix} 1 & 2 & 0 & 0 & -1 & -5 \\
 0 & 0 & 1 & 0 & 0 & -3 \\
 0 & 0 & 0 & 1 & 1 & 2 \\
-0 & 0 & 0 & 0 & 0 & 0 \end{bmatrix} $$
+0 & 0 & 0 & 0 & 0 & 0
+\end{bmatrix}
+$$  
 
-$$\mathbf{a}_2 = 2\mathbf{a}_1 \Leftrightarrow \mathbf{r}_2 = 2\mathbf{r}_1 $$  
-$$\mathbf{a}_5 = -\mathbf{a}_1 + \mathbf{a}_4 \Leftrightarrow \mathbf{r}_5 = -\mathbf{r}_1 + \mathbf{r}_4$$
+$$
+\mathbf{a}_2 = 2\mathbf{a}_1 \Leftrightarrow \mathbf{r}_2 = 2\mathbf{r}_1
+$$  
+
+$$
+\mathbf{a}_5 = -\mathbf{a}_1 + \mathbf{a}_4 \Leftrightarrow \mathbf{r}_5 = -\mathbf{r}_1 + \mathbf{r}_4
+$$  
 
 $A$ 和 $R$ 的秩也是一样.  
 
