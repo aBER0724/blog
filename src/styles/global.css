@@ -90,3 +90,10 @@ html[data-theme-transition] [data-disable-transition-on-theme] {
   font-display: swap;
   font-weight: 400 700;
 }
+
+@font-face {
+  font-family: "VanillaCreamOx-Regular";
+  src: url("/font/VanillaCreamOx-Regular.woff2") format("woff2-variations");
+  font-display: swap;
+  font-weight: 400 700;
+}
