@@ -18,7 +18,8 @@ $$c_{ij} = a_{i1}b_{1j} + a_{i2}b_{2j} + \cdots + a_{in}b_{nj}$$
 
 行 $\times$ 列 的和.  
 
-> $$A = \begin{bmatrix} 
+$$
+A = \begin{bmatrix} 
    1 & 2 \\ 
    3 & 4 \\ 
    5 & 6 
@@ -26,7 +27,9 @@ $$c_{ij} = a_{i1}b_{1j} + a_{i2}b_{2j} + \cdots + a_{in}b_{nj}$$
 B = \begin{bmatrix}
    -1 & 1 \\ 
    3 & 2 
-\end{bmatrix}s
+\end{bmatrix}
+$$
+$$
 C = AB = \begin{bmatrix}
    (-1) \times 1 + 3 \times 2 & 1 \times 1 + 2 \times 2 \\ 
    (-1) \times 3 + 3 \times 4 & 1 \times 3 + 2 \times 4 \\ 
@@ -38,7 +41,8 @@ $$
 
 $AB$ 也相当于 $A$ 与 $B$ 的每列进行相乘.
 
-$$\begin{matrix}
+$$
+\begin{matrix}
 AB = & A[b_1 \ b_2 \ \cdots \ b_p] \\
    = & Ab_1 + Ab_2 + \cdots + Ab_p
 \end{matrix}
@@ -50,7 +54,8 @@ $AB$ 也相当于 $A$ 与 $B$ 的行组合.
 
 $$c_{ij} = a_{i1}b^T_1 + a_{i2}b^T_2 + \cdots + a_{in}b^T_n$$
 
-> $$\begin{bmatrix} 
+$$ 
+\begin{bmatrix} 
    1 & 2 \\ 
    3 & 4 \\ 
    5 & 6 
@@ -73,7 +78,8 @@ $$c_{ij} = a_1b^T_1 + a_2b^T_2 + \cdots + a_nb^T_n$$
 
 多个矩阵 $a_ib^T_j$ 求和.
 
-> $$\begin{bmatrix} 
+$$
+\begin{bmatrix} 
    1 & 2 \\ 
    3 & 4 \\ 
    5 & 6
@@ -106,7 +112,8 @@ $$
 
 Partition: 可以将矩阵按行和列拆分成块, 每个块都可以当作一个矩阵.
 
-$$A = \begin{bmatrix}
+$$
+A = \begin{bmatrix}
    1 & 3 & 4 & 2 \\ 
    0 & 5 & -1 & 6 \\ 
    1 & 0 & 3 & -1 
@@ -119,7 +126,8 @@ B = \begin{bmatrix}
  \end{bmatrix}
 $$
 
-$$A = \begin{bmatrix}
+$$
+A = \begin{bmatrix}
    A_{11} & A_{12} \\ 
    A_{21} & A_{22} 
 \end{bmatrix} \quad 
@@ -129,7 +137,8 @@ B = \begin{bmatrix}
 \end{bmatrix}
 $$
 
-$$\begin{matrix}
+$$
+\begin{matrix}
 AB = & 
    \begin{bmatrix}
       A_{11} & A_{12} \\ 
@@ -145,7 +154,8 @@ $$
 
 对复杂矩阵进行拆分后, 可以简化一部分运算.
 
->$$A = \begin{bmatrix}
+$$
+A = \begin{bmatrix}
    1 & 0 & 0 & 0 \\ 
    0 & 1 & 0 & 0 \\ 
    6 & 8 & 5 & 0 \\ 
@@ -158,7 +168,8 @@ A =
 \end{bmatrix}
 $$
 
-$$A^2 = \begin{bmatrix}
+$$
+A^2 = \begin{bmatrix}
    I_2 & O \\ 
    B & 5I_2 
 \end{bmatrix} 
@@ -196,7 +207,8 @@ $$y \leftarrow C(A \leftarrow B) \leftarrow x$$
    > $C^TA^T: n \times m \cdot m \times k \rightarrow n \times k \rightarrow (AC)^T$
 
 5. 对角矩阵相乘直接将对角线相乘即可.
-   $$A = \begin{bmatrix}
+   $$
+   A = \begin{bmatrix}
       1 & 0 & 0 \\
       0 & 2 & 0 \\ 
       0 & 0 & 3 
