@@ -185,7 +185,7 @@ $$
 
 ## 矩阵乘法意义
 
-$$y \leftarrow A \leftarrow v \leftarrow B \leftarrow x$$
+$$y \leftarrow A \leftarrow v \leftarrow B \leftarrow x$$  
 $$y \leftarrow C(A \leftarrow B) \leftarrow x$$ 
 
 ## 矩阵乘法的性质
