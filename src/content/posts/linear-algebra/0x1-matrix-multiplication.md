@@ -16,7 +16,7 @@ tags:
 $$C = AB$$
 $$c_{ij} = a_{i1}b_{1j} + a_{i2}b_{2j} + \cdots + a_{in}b_{nj}$$
 
-行 $\times$ 列 的和.
+行 $\times$ 列 的和.  
 
 > $$
 A = \begin{bmatrix} 
@@ -27,7 +27,7 @@ A = \begin{bmatrix}
 B = \begin{bmatrix}
    -1 & 1 \\ 
    3 & 2 
-\end{bmatrix}
+\end{bmatrix}s
 $$
 > $$C = AB = \begin{bmatrix}
    (-1) \times 1 + 3 \times 2 & 1 \times 1 + 2 \times 2 \\ 
@@ -151,7 +151,8 @@ AB = &
 $$
 
 对复杂矩阵进行拆分后, 可以简化一部分运算.
-> 
+
+>
 $$A = 
 \begin{bmatrix}
    1 & 0 & 0 & 0 \\ 
@@ -190,20 +191,22 @@ $$ y \leftarrow C(A \leftarrow B) \leftarrow x$$
 ## 矩阵乘法的性质
 
 1. $AB \not = BA$
-1. $A$,$B$ 是 $k \times m$, $C$ 是 $m \times n$, $P,Q$ 是 $n \times p$.  
+2. $A$,$B$ 是 $k \times m$, $C$ 是 $m \times n$, $P,Q$ 是 $n \times p$.
    - 对任意的 $s$, $s(AC) = (sA)C = A(sC)$  
    - $(A + B)C = AC + BC$  
    - $C(P+Q)=CP+CQ$  
    - $I_kA = A = AI_m$  
    - 任何矩阵与零矩阵相乘结果都是**零矩阵**.
-1. 对于 $n \times n$ 的矩阵 $A$: $A^k = AA \cdots A(k次), A^1=A, A^0 = I_n$  
-1. $A$ 是 $k \times m$, $C$ 是 $m \times n$.
+3. 对于 $n \times n$ 的矩阵 $A$: $A^k = AA \cdots A(k次), A^1=A, A^0 = I_n$
+4. $A$ 是 $k \times m$, $C$ 是 $m \times n$.
    - $(AC)^T = C^TA^T$
-   > $AC: k \times m \cdot m \times n \rightarrow k \times n$  
+
+   > $AC: k \times m \cdot m \times n \rightarrow k \times n$
    > $(AC)^T: (k \times n)^T \rightarrow n \times k$  
    > $A^TC^T: m \times k \cdot n \times m \not \rightarrow D.N.E.$  
-   > $C^TA^T: n \times m \cdot m \times k \rightarrow n \times k \rightarrow (AC)^T$  
-1. 对角矩阵相乘直接将对角线相乘即可.
+   > $C^TA^T: n \times m \cdot m \times k \rightarrow n \times k \rightarrow (AC)^T$
+
+5. 对角矩阵相乘直接将对角线相乘即可.
    $$
    A = \begin{bmatrix}
       1 & 0 & 0 \\
@@ -221,7 +224,8 @@ $$ y \leftarrow C(A \leftarrow B) \leftarrow x$$
       0 & 0 & 6 
    \end{bmatrix}
    $$
-1. $A$,$B$ 是 $k \times m$, $C$ 是 $m \times n$, $P,Q$ 是 $n \times p$.  
+
+6. $A$,$B$ 是 $k \times m$, $C$ 是 $m \times n$, $P,Q$ 是 $n \times p$.
    - A(CP) = (AC)P, A(CP) 和 (AC)P 的结果相同, 但计算量不同.
    - 假设 $k = 1, m = 1000, n = 1, p = 1000$.
      - A(CP): $m \times n \times p + k \times m \times p = 2 \cdot 10^6$
