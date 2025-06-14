@@ -17,7 +17,7 @@ export const themeConfig: ThemeConfig = {
     url: 'https://blog.planetaber.site/',
     // favicon url
     // recommended formats: svg, png or ico
-    favicon: '/icon/favicon.svg', // or https://example.com/favicon.svg
+    favicon: 'https://imgbed.aberrrrrrr.space/file/1749883355977_5B703F00-1A9F-4C08-8D33-81040E00AAC7_1_105_c.jpeg', // or https://example.com/favicon.svg
   },
   // SITE INFORMATION >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> END
 
