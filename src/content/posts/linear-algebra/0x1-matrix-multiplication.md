@@ -230,3 +230,98 @@ $$y \leftarrow C(A \leftarrow B) \leftarrow x$$
    - 假设 $k = 1, m = 1000, n = 1, p = 1000$.
      - A(CP): $m \times n \times p + k \times m \times p = 2 \cdot 10^6$
      - (AC)P: $k \times m \times n + k \times n \times p = 2 \cdot 10^3$
+
+## 矩阵的逆 Inverse of Matrix
+
+$$AB = I \ and \ BA = I $$
+
+$A$ 与 $B$ 互为逆矩阵, $B = A^{-1}, A = B^{-1}$.
+
+> Invertible = Non-singular  
+> Not Invertible = Singular  
+
+**非方矩阵一定不是可逆的**.
+
+矩阵**有且仅有**一个逆矩阵.
+
+1. $A$ 是可逆的, $A$ 的转置矩阵也可逆.
+
+   $AA^{-1}=I \Rightarrow (AA^{-1})^T=I \Rightarrow (A^{-1})^TA^T=I$  
+   $A^{-1}A=I \Rightarrow (A^{-1}A)^T=I \Rightarrow A^T(A^{-1})^T=I$  
+
+2. $A$ 和 $B$ 均可逆, 则 $AB$ 也可逆. 
+ 
+   $(AB)^{-1} = B^{-1}A^{-1}$  
+   $B^{-1}A^{-1}(AB) = B^{-1}(A^{-1}A)B = B^{-1}B = I$  
+   $(AB)B^{-1}A^{-1} = A(BB^{-1})A^{-1} = AA^{-1} = I$
+
+   > k 个可逆的矩阵, 他们的内积也是可逆的.  
+   > $(A_1A_2 \cdots A_k)^{-1}=(A_k)^{-1}(A_{k-1})^{-1}\cdots(A_1)^{-1}$
+
+### 如何确定矩阵是否可逆
+
+$A$ 是方矩阵, 是 $One-to-one$ 和 $Onto$ 的(满足任一条件, 另一个条件自然成立).
+
+> $One-to-one$: $x$ 与 $f(x)$ 一一对应.  
+> $Onto$: 对应域 = 值域.(对应域一般大于等于值域)
+
+1. $Onto \rightarrow One-to-one \rightarrow Invertible$
+   - $A$ 的列可以占满 $R^n$.
+   - 对于 $R^n$ 中的任意 $b$, $Ax=b$ 均有解.
+   - $A$ 的秩 = 行数.
+2. $One-to-one \rightarrow Onto \rightarrow Invertible$ 
+   - $A$ 的列都是linear independent.
+   - $A$ 的秩 = 列数 = 行数. 
+   - $A$ 的零度 = 0.
+   - $Ax=0$ 有且仅有一个解为零向量.
+   - $A$ 的 RREF 是 $I_n$.
+
+   可以通过确认矩阵的 RREF 是否是 $I_n$.
+
+3. 存在 $n \times n$ 的矩阵 $B$, 满足 $BA = I_n$;
+   存在 $n \times n$ 的矩阵 $C$, 满足 $AC = I_n$;
+
+4. Elementary Matrix 就是对 $I_n$ 进行 Elementary Operation 后的矩阵.
+
+   - 交换第二行和第三行: 
+      $\begin{bmatrix}
+         1 & 0 & 0 \\
+         0 & 1 & 0 \\
+         0 & 0 & 1 
+       \end{bmatrix} 
+       \xrightarrow{\text{交换}}
+       E_1 = \begin{bmatrix}
+         1 & 0 & 0 \\
+         0 & 0 & 1 \\
+         0 & 1 & 0 
+       \end{bmatrix}$
+
+   - 第二行乘以-4: 
+      $\begin{bmatrix}
+         1 & 0 & 0 \\
+         0 & 1 & 0 \\
+         0 & 0 & 1 
+       \end{bmatrix} 
+       \xrightarrow{\text{乘以-4}} 
+       E_2 = \begin{bmatrix}
+         1 & 0 & 0 \\
+         0 & -4 & 0 \\
+         0 & 0 & 1
+       \end{bmatrix}$
+
+   - 第三行+两倍的第一行: 
+      $\begin{bmatrix}
+         1 & 0 & 0 \\
+         0 & 1 & 0 \\
+         0 & 0 & 1 
+       \end{bmatrix} 
+       \xrightarrow{\text{加法}}
+       E_3 = \begin{bmatrix}
+         1 & 0 & 0 \\
+         0 & 1 & 0 \\
+         2 & 0 & 1 
+       \end{bmatrix}$
+   
+   Elementary Matrix 的逆矩阵就是进行相反的操作(交换是正常交换): 
+   - $\times \leftrightarrow \div$
+   - $+ \leftrightarrow -$
