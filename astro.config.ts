@@ -90,6 +90,9 @@ export default defineConfig({
     },
   },
   vite: {
+    server: {
+      allowedHosts: ['test.aberrrrrrr.space'],
+    },
     plugins: [
       {
         name: 'prefix-font-urls-with-base',

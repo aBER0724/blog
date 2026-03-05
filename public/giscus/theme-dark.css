@@ -5,10 +5,10 @@
 
  main {
   /* Custom Theme Colors */
-  --secondary-color: oklch(77% 0.005 298);
-  --secondary-color-25: oklch(77% 0.005 298 / 25%);
-  --secondary-color-5: oklch(77% 0.005 298 / 5%);
-  --background-color: oklch(22% 0.005 298);
+  --secondary-color: oklch(78% 0.003 270);
+  --secondary-color-25: oklch(78% 0.003 270 / 25%);
+  --secondary-color-5: oklch(78% 0.003 270 / 5%);
+  --background-color: oklch(5% 0.001 270);
 
   --color-fg-default: var(--secondary-color);
   --color-canvas-default: transparent;
