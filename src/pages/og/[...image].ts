@@ -17,39 +17,47 @@ const pages = Object.fromEntries(
   ]),
 )
 
-// Configure Open Graph image generation route
-// eslint-disable-next-line antfu/no-top-level-await
-export const { getStaticPaths, GET } = await OGImageRoute({
-  param: 'image',
-  pages,
-  getImageOptions: (_path, page) => ({
-    title: page.title,
-    description: page.description,
-    logo: {
-      path: './public/icons/og-logo.png', // Required local path and PNG format
-      size: [250],
-    },
-    border: {
-      color: [242, 241, 245],
-      width: 20,
-    },
-    font: {
-      title: {
-        families: ['Noto Sans SC'],
-        weight: 'Bold',
-        color: [34, 33, 36],
-        lineHeight: 1.5,
-      },
-      description: {
-        families: ['Noto Sans SC'],
-        color: [72, 71, 74],
-        lineHeight: 1.5,
-      },
-    },
-    fonts: [
-      './public/fonts/NotoSansSC-Bold.otf',
-      './public/fonts/NotoSansSC-Regular.otf',
-    ],
-    bgGradient: [[242, 241, 245]],
-  }),
-})
+const route = posts.length === 0
+  ? null
+  : await OGImageRoute({
+      param: 'image',
+      pages,
+      getImageOptions: (_path, page) => ({
+        title: page.title,
+        description: page.description,
+        logo: {
+          path: './public/icons/og-logo.png', // Required local path and PNG format
+          size: [250],
+        },
+        border: {
+          color: [242, 241, 245],
+          width: 20,
+        },
+        font: {
+          title: {
+            families: ['Noto Sans SC'],
+            weight: 'Bold',
+            color: [34, 33, 36],
+            lineHeight: 1.5,
+          },
+          description: {
+            families: ['Noto Sans SC'],
+            color: [72, 71, 74],
+            lineHeight: 1.5,
+          },
+        },
+        fonts: [
+          './public/fonts/NotoSansSC-Bold.otf',
+          './public/fonts/NotoSansSC-Regular.otf',
+        ],
+        bgGradient: [[242, 241, 245]],
+      }),
+    })
+
+export const getStaticPaths = posts.length === 0
+  ? () => []
+  : route!.getStaticPaths
+
+export const GET = posts.length === 0
+  ? () => new Response(null, { status: 404 })
+  : route!.GET
