@@ -12,7 +12,7 @@ export const themeConfig: ThemeConfig = {
     // use i18n title/subtitle/description from src/i18n/ui.ts instead of static ones above
     i18nTitle: true, // true | false
     // author name
-    author: 'radishzz',
+    author: 'aBER',
     // site url
     url: 'https://retypeset.radishzz.cc',
     // base path
@@ -32,25 +32,25 @@ export const themeConfig: ThemeConfig = {
       // primary color
       // used for title, hover, etc
       // oklch color picker: https://oklch.com/
-      primary: 'oklch(25% 0.005 298)',
+      primary: 'oklch(28% 0.01 80)',
       // secondary color
       // used for post text
-      secondary: 'oklch(40% 0.005 298)',
+      secondary: 'oklch(42% 0.008 80)',
       // background color
-      background: 'oklch(96% 0.005 298)',
+      background: 'oklch(95.5% 0.012 95)',
       // highlight color
       // used for navbar, selected text, etc
-      highlight: 'oklch(0.93 0.195089 103.2532 / 0.5)', // rgba(255,235,0,0.5)
+      highlight: 'oklch(92% 0.06 95 / 0.45)',
     },
     dark: {
       // primary color
-      primary: 'oklch(92% 0.005 298)',
+      primary: 'oklch(92% 0.003 270)',
       // secondary color
-      secondary: 'oklch(77% 0.005 298)',
+      secondary: 'oklch(78% 0.003 270)',
       // background color
-      background: 'oklch(22% 0.005 298)',
+      background: 'oklch(5% 0.001 270)',
       // highlight color
-      highlight: 'oklch(0.93 0.195089 103.2532 / 0.2)', // rgba(255,235,0,0.2)
+      highlight: 'oklch(82% 0.07 95 / 0.22)',
     },
   },
   // COLOR SETTINGS >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> END
@@ -167,11 +167,11 @@ export const themeConfig: ThemeConfig = {
       },
       {
         name: 'GitHub',
-        url: 'https://github.com/radishzzz/astro-theme-retypeset',
+        url: 'https://github.com/aber0724',
       },
       {
         name: 'Email',
-        url: 'email@radishzz.cc',
+        url: 'ab3r77724@gmail.com',
       },
       // {
       //   name: 'X',
