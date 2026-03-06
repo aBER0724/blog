@@ -1,0 +1,48 @@
+---
+import { allLocales } from '@/config'
+import GalleryComment from '@/components/Comment/GalleryComment.astro'
+import { getLangFromLocale, getLangRouteParam } from '@/i18n/lang'
+import { ui } from '@/i18n/ui'
+import Layout from '@/layouts/Layout.astro'
+import { getGalleryItems } from '@/utils/gallery'
+import { getLocalizedPath } from '@/i18n/path'
+
+export async function getStaticPaths() {
+  const items = await getGalleryItems()
+
+  return allLocales.flatMap(lang => items.map(item => ({
+    params: {
+      lang: getLangRouteParam(lang),
+      slug: item.slug,
+    },
+    props: { item },
+  })))
+}
+
+const currentLang = getLangFromLocale(Astro.currentLocale)
+const currentUI = ui[currentLang]
+const { item } = Astro.props
+const pageTitle = item.metadataTitle || item.fileName
+const pageDescription = item.description || item.fileName
+---
+
+<Layout postTitle={pageTitle} postDescription={pageDescription}>
+  <article>
+    <div class="uno-decorative-line" />
+    <div class="mt-10.5">
+      <a
+        href={getLocalizedPath('/gallery/', currentLang)}
+        class="inline-flex items-center c-secondary no-underline transition-colors hover:c-primary"
+      >
+        {currentUI.galleryBack}
+      </a>
+      <h1 class="post-title mt-6 break-all">{pageTitle}</h1>
+      {item.date && <p class="mb-4 c-primary font-time">{item.date}</p>}
+      {item.description && <p class="mb-8 c-secondary leading-relaxed">{item.description}</p>}
+      <img src={item.imagePath} alt={item.description || pageTitle} class="w-full rounded-sm" />
+      <section class="mt-8">
+        <GalleryComment discussionTerm={item.commentKey} instanceId={item.commentKey} />
+      </section>
+    </div>
+  </article>
+</Layout>

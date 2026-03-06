@@ -1,0 +1,29 @@
+---
+import Giscus from '@/components/Comment/Giscus.astro'
+import Twikoo from '@/components/Comment/Twikoo.astro'
+import Waline from '@/components/Comment/Waline.astro'
+import { themeConfig } from '@/config'
+
+interface Props {
+  discussionTerm: string
+  instanceId?: string
+}
+
+const { discussionTerm, instanceId } = Astro.props as Props
+const { enabled: enableComment } = themeConfig.comment
+
+const giscusRepo = themeConfig.comment.giscus?.repo ?? ''
+const showGiscus = enableComment && Boolean(giscusRepo.trim())
+
+const twikooEnvId = themeConfig.comment.twikoo?.envId ?? ''
+const showTwikoo = enableComment && Boolean(twikooEnvId.trim())
+
+const walineURL = themeConfig.comment.waline?.serverURL ?? ''
+const showWaline = enableComment && Boolean(walineURL.trim())
+
+const discussionPath = `/${discussionTerm}`
+---
+
+{showGiscus && <Giscus discussionTerm={discussionTerm} instanceId={instanceId} />}
+{showTwikoo && <Twikoo path={discussionPath} instanceId={instanceId} />}
+{showWaline && <Waline path={discussionPath} instanceId={instanceId} />}

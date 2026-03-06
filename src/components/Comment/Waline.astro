@@ -4,17 +4,23 @@ import walineCSS from '@waline/client/style?url'
 import { allLocales, base, defaultLocale, themeConfig } from '@/config'
 import { walineLocaleMap } from '@/i18n/config'
 
+interface Props {
+  path?: string
+  instanceId?: string
+}
+
 const {
   serverURL = '',
   emoji = [],
   search = false,
   imageUploader = false,
 } = themeConfig.comment.waline ?? {}
+const { path, instanceId } = Astro.props as Props
 
 // Remove locale prefix from path
 const currentPath = Astro.url.pathname
 const localePattern = new RegExp(`\\/(${allLocales.join('|')})\\/`)
-const walinePath = currentPath.replace(localePattern, '/')
+const walinePath = path ?? currentPath.replace(localePattern, '/')
 
 // Determine language
 const pathWithoutBase = base && currentPath.startsWith(base)
@@ -23,6 +29,7 @@ const pathWithoutBase = base && currentPath.startsWith(base)
 const matchedLang = Object.keys(walineLocaleMap).find(code => pathWithoutBase.startsWith(`/${code}/`))
 const lang = (matchedLang ?? defaultLocale) as keyof typeof walineLocaleMap
 
+const walineId = instanceId ? `waline-${instanceId}` : 'waline'
 const walineConfig = {
   serverURL,
   path: walinePath,
@@ -32,12 +39,14 @@ const walineConfig = {
   imageUploader,
   walineJS,
   walineCSS,
+  el: `#${walineId}`,
 }
 ---
 
 <div
-  id="waline"
+  id={walineId}
   class="no-heti mt-16"
+  data-comment-provider="waline"
   data-config={JSON.stringify(walineConfig)}
 />
 
@@ -48,19 +57,20 @@ import type { WalineInstance } from '@waline/client'
 let walineObserver: IntersectionObserver | null = null
 let walineInstance: WalineInstance | null = null
 
+let walineContainer: HTMLElement | null = null
+
 async function setupWaline() {
-  const walineContainer = document.getElementById('waline')
   if (!walineContainer || !walineContainer.dataset.config) {
     return
   }
 
   try {
     const config = JSON.parse(walineContainer.dataset.config)
-    const { walineJS, walineCSS, ...restConfig } = config
+    const { walineJS, walineCSS, el, ...restConfig } = config
     const { init } = await import(/* @vite-ignore */ walineJS)
 
     walineInstance = init({
-      el: '#waline',
+      el,
       dark: 'html.dark',
       requiredMeta: ['nick', 'mail'],
       highlighter: false,
@@ -77,12 +87,25 @@ async function setupWaline() {
 
 // Lazy load Waline when the container enters viewport
 function lazySetupWaline() {
-  const walineContainer = document.getElementById('waline')
-  if (!walineContainer || !walineContainer.dataset.config) {
+  const script = document.currentScript
+  const container = script?.previousElementSibling
+  if (
+    !(script instanceof HTMLScriptElement)
+    || !(container instanceof HTMLElement)
+    || container.dataset.commentProvider !== 'waline'
+    || !container.dataset.config
+  ) {
     return
   }
 
-  const config = JSON.parse(walineContainer.dataset.config)
+  walineContainer = container
+
+  const configJson = walineContainer.dataset.config
+  if (!configJson) {
+    return
+  }
+
+  const config = JSON.parse(configJson)
   const { walineCSS } = config
 
   if (!document.getElementById('waline-css')) {
@@ -109,6 +132,7 @@ function cleanupWaline() {
   walineObserver = null
   walineInstance?.destroy?.()
   walineInstance = null
+  walineContainer = null
 }
 
 document.addEventListener('astro:page-load', lazySetupWaline)
@@ -117,7 +141,7 @@ document.addEventListener('astro:before-swap', cleanupWaline)
 
 <!-- Official CSS Variables >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> -->
 <style>
-#waline {
+.no-heti {
   /* Regular Colors */
   --waline-white: oklch(var(--un-preset-theme-colors-background));
   --waline-light-grey: oklch(var(--un-preset-theme-colors-primary) / 0.25);
