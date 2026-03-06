@@ -33,6 +33,9 @@ export default defineConfig({
     prefetchAll: true,
     defaultStrategy: 'viewport', // hover, tap, viewport, load
   },
+  server: {
+    allowedHosts: ['test.aberrrrrrr.space'],
+  },
   ...imageConfig,
   i18n: {
     locales: Object.entries(langMap).map(([path, codes]) => ({

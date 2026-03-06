@@ -1,0 +1,270 @@
+---
+import GalleryComment from '@/components/Comment/GalleryComment.astro'
+import { allLocales } from '@/config'
+import { getLangFromLocale, getLangRouteParam } from '@/i18n/lang'
+import { ui } from '@/i18n/ui'
+import Layout from '@/layouts/Layout.astro'
+import { getGalleryItems } from '@/utils/gallery'
+
+export async function getStaticPaths() {
+  return allLocales.map(lang => ({
+    params: { lang: getLangRouteParam(lang) },
+  }))
+}
+
+const currentLang = getLangFromLocale(Astro.currentLocale)
+const currentUI = ui[currentLang]
+const items = await getGalleryItems()
+const getItemLabel = (item: Awaited<ReturnType<typeof getGalleryItems>>[number]) => item.metadataTitle || item.fileName
+---
+
+<Layout postTitle={currentUI.gallery}>
+  <section>
+    <div class="uno-decorative-line" />
+    {items.length === 0 ? (
+      <p class="mt-10.5 c-secondary leading-relaxed">{currentUI.galleryEmpty}</p>
+    ) : (
+      <>
+        <div class="mt-10.5 columns-1 gap-8 md:columns-2 lg:columns-2">
+          {items.map(item => (
+            <article class="mb-8 break-inside-avoid">
+              <button
+                type="button"
+                class="block w-full cursor-pointer border-none bg-transparent p-0 text-left"
+                data-gallery-trigger
+                data-gallery-image={item.imagePath}
+                data-gallery-title={getItemLabel(item)}
+                data-gallery-description={item.description}
+                data-gallery-date={item.date ?? ''}
+                data-gallery-comment-key={item.commentKey}
+              >
+                <img
+                  src={item.imagePath}
+                  alt={item.description || getItemLabel(item)}
+                  class="w-full rounded-sm"
+                  loading="lazy"
+                />
+              </button>
+            </article>
+          ))}
+        </div>
+
+        <div
+          class="fixed inset-0 z-50 hidden items-center justify-center p-4"
+          data-gallery-modal
+          hidden
+        >
+          <button
+            type="button"
+            class="absolute inset-0 border-none bg-black/70 p-0"
+            data-gallery-close
+            aria-label="Close gallery modal"
+          />
+          <div
+            class="relative z-1 flex max-h-full w-full max-w-6xl flex-col overflow-hidden rounded-sm bg-base px-6 py-6 shadow-xl lg:h-[min(90vh,56rem)]"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="gallery-modal-title"
+            data-gallery-dialog
+            tabindex="-1"
+          >
+            <div class="mb-6 flex items-start justify-between gap-4">
+              <div class="min-w-0">
+                <p id="gallery-modal-title" class="text-lg font-medium" data-gallery-modal-title />
+                <p class="mt-2 c-secondary leading-relaxed" data-gallery-modal-date />
+              </div>
+              <button
+                type="button"
+                class="shrink-0 border-none bg-transparent p-0 text-2xl leading-none"
+                data-gallery-close
+                aria-label="Close gallery modal"
+              >
+                ×
+              </button>
+            </div>
+            <div class="grid min-h-0 flex-1 gap-6 lg:grid-cols-[minmax(0,2fr)_minmax(20rem,1fr)] lg:items-start">
+              <div class="min-h-0 overflow-auto">
+                <img
+                  src=""
+                  alt=""
+                  class="w-full rounded-sm"
+                  data-gallery-modal-image
+                />
+              </div>
+              <div class="flex min-h-0 flex-col gap-6" data-gallery-modal-sidebar>
+                <section
+                  class="top-0 z-1 rounded-sm bg-base lg:sticky"
+                  data-gallery-modal-detail
+                >
+                  <p class="c-secondary leading-relaxed" data-gallery-modal-description />
+                </section>
+                <section class="min-h-0 flex-1" data-gallery-modal-comments>
+                  <div class="min-h-0 lg:max-h-full lg:overflow-y-auto" data-gallery-modal-comments-scroll>
+                    {items.map((item, index) => (
+                      <div
+                        data-gallery-comment-thread={item.commentKey}
+                        hidden={index !== 0}
+                      >
+                        <GalleryComment discussionTerm={item.commentKey} instanceId={item.commentKey} />
+                      </div>
+                    ))}
+                  </div>
+                </section>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <script is:inline>
+          const modal = document.querySelector('[data-gallery-modal]')
+          const modalImage = modal?.querySelector('[data-gallery-modal-image]')
+          const modalTitle = modal?.querySelector('[data-gallery-modal-title]')
+          const modalDate = modal?.querySelector('[data-gallery-modal-date]')
+          const modalDescription = modal?.querySelector('[data-gallery-modal-description]')
+          const modalCommentThreads = modal
+            ? Array.from(modal.querySelectorAll('[data-gallery-comment-thread]'))
+            : []
+          const triggerSelector = '[data-gallery-trigger]'
+          const closeSelector = '[data-gallery-close]'
+          const dialog = modal?.querySelector('[data-gallery-dialog]')
+          const closeButton = dialog?.querySelector(closeSelector)
+          const focusableSelector = [
+            'button:not([disabled])',
+            'a[href]',
+            'input:not([disabled])',
+            'select:not([disabled])',
+            'textarea:not([disabled])',
+            '[tabindex]:not([tabindex="-1"])',
+          ].join(', ')
+
+          let activeTrigger = null
+
+          function getFocusableElements() {
+            if (!(dialog instanceof HTMLElement)) {
+              return []
+            }
+
+            return Array.from(dialog.querySelectorAll(focusableSelector)).filter(
+              element => element instanceof HTMLElement && !element.hidden,
+            )
+          }
+
+          function setActiveCommentThread(commentKey) {
+            modalCommentThreads.forEach((thread) => {
+              if (!(thread instanceof HTMLElement)) {
+                return
+              }
+
+              thread.hidden = thread.dataset.galleryCommentThread !== commentKey
+            })
+          }
+
+          function closeModal() {
+            if (!(modal instanceof HTMLElement)) {
+              return
+            }
+
+            modal.hidden = true
+            modal.classList.add('hidden')
+            document.body.style.overflow = ''
+            activeTrigger?.focus()
+            activeTrigger = null
+          }
+
+          function openModal(trigger) {
+            if (!(modal instanceof HTMLElement) || !(modalImage instanceof HTMLImageElement)) {
+              return
+            }
+
+            activeTrigger = trigger
+            const title = trigger.dataset.galleryTitle || ''
+            const description = trigger.dataset.galleryDescription || ''
+            const date = trigger.dataset.galleryDate || ''
+            const image = trigger.dataset.galleryImage || ''
+            const commentKey = trigger.dataset.galleryCommentKey || ''
+
+            modalImage.src = image
+            modalImage.alt = description || title
+
+            if (modalTitle instanceof HTMLElement) {
+              modalTitle.textContent = title
+            }
+
+            if (modalDate instanceof HTMLElement) {
+              modalDate.textContent = date
+              modalDate.hidden = !date
+            }
+
+            if (modalDescription instanceof HTMLElement) {
+              modalDescription.textContent = description
+              modalDescription.hidden = !description
+            }
+
+            setActiveCommentThread(commentKey)
+
+            modal.hidden = false
+            modal.classList.remove('hidden')
+            document.body.style.overflow = 'hidden'
+            closeButton?.focus()
+            if (document.activeElement !== closeButton) {
+              dialog?.focus()
+            }
+          }
+
+          document.querySelectorAll(triggerSelector).forEach((trigger) => {
+            if (!(trigger instanceof HTMLButtonElement)) {
+              return
+            }
+
+            trigger.addEventListener('click', () => openModal(trigger))
+          })
+
+          modal?.querySelectorAll(closeSelector).forEach((closeButton) => {
+            closeButton.addEventListener('click', closeModal)
+          })
+
+          document.addEventListener('keydown', (event) => {
+            if (!(modal instanceof HTMLElement) || modal.hidden) {
+              return
+            }
+
+            if (event.key === 'Escape') {
+              closeModal()
+              return
+            }
+
+            if (event.key !== 'Tab' || !(dialog instanceof HTMLElement)) {
+              return
+            }
+
+            const focusableElements = getFocusableElements()
+
+            if (focusableElements.length === 0) {
+              event.preventDefault()
+              dialog.focus()
+              return
+            }
+
+            const firstElement = focusableElements[0]
+            const lastElement = focusableElements[focusableElements.length - 1]
+            const activeElement = document.activeElement
+
+            if (event.shiftKey) {
+              if (activeElement === firstElement || !dialog.contains(activeElement)) {
+                event.preventDefault()
+                lastElement.focus()
+              }
+
+              return
+            }
+
+            if (activeElement === lastElement || !dialog.contains(activeElement)) {
+              event.preventDefault()
+              firstElement.focus()
+            }
+          })
+        </script>
+      </>
+    )}
+  </section>
+</Layout>

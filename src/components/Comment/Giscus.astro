@@ -15,7 +15,16 @@ const {
 } = themeConfig.comment.giscus ?? {}
 
 
+interface Props {
+  discussionTerm?: string
+  instanceId?: string
+}
+
+const { discussionTerm, instanceId } = Astro.props as Props
+
 const currentPath = Astro.url.pathname
+const resolvedMapping = discussionTerm ? 'specific' : mapping
+const resolvedTerm = discussionTerm?.trim()
 
 // Determine language
 const pathWithoutBase = base && currentPath.startsWith(base)
@@ -24,12 +33,14 @@ const pathWithoutBase = base && currentPath.startsWith(base)
 const matchedLang = Object.keys(giscusLocaleMap).find(code => pathWithoutBase.startsWith(`/${code}/`))
 const lang = (matchedLang ?? defaultLocale) as keyof typeof giscusLocaleMap
 
+const giscusContainerId = instanceId ? `giscus-${instanceId}` : 'giscus'
 const giscusConfig = {
   repo,
   repoId,
   category,
   categoryId,
-  mapping,
+  mapping: resolvedMapping,
+  term: resolvedTerm,
   strict,
   reactionsEnabled,
   emitMetadata,
@@ -39,8 +50,9 @@ const giscusConfig = {
 ---
 
 <div
-  id="giscus"
+  id={giscusContainerId}
   class="giscus mt-16"
+  data-comment-provider="giscus"
   data-config={JSON.stringify(giscusConfig)}
 />
 
@@ -77,15 +89,27 @@ function updateGiscusTheme() {
 }
 
 function setupGiscus() {
-  giscusContainer = document.getElementById('giscus')
-  if (!giscusContainer || !giscusContainer.dataset.config) {
+  const script = document.currentScript
+  const container = script?.previousElementSibling
+  if (
+    !(script instanceof HTMLScriptElement)
+    || !(container instanceof HTMLElement)
+    || container.dataset.commentProvider !== 'giscus'
+    || !container.dataset.config
+  ) {
     return
   }
 
+  giscusContainer = container
   giscusContainer.innerHTML = ''
 
+  const configJson = giscusContainer.dataset.config
+  if (!configJson) {
+    return
+  }
+
   try {
-    const config = JSON.parse(giscusContainer.dataset.config)
+    const config = JSON.parse(configJson)
     const { category, ...restConfig } = config
 
     const dataAttributes: Record<string, string> = {

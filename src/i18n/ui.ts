@@ -7,6 +7,9 @@ interface Translation {
   posts: string
   tags: string
   about: string
+  gallery: string
+  galleryEmpty: string
+  galleryBack: string
   toc: string
 }
 
@@ -18,6 +21,9 @@ export const ui: Record<Language, Translation> = {
     posts: 'Beiträge',
     tags: 'Schlagwörter',
     about: 'Über',
+    gallery: 'Galerie',
+    galleryEmpty: 'Noch keine Bilder vorhanden.',
+    galleryBack: 'Zur Galerie zurück',
     toc: 'Inhaltsverzeichnis',
   },
   'en': {
@@ -27,6 +33,9 @@ export const ui: Record<Language, Translation> = {
     posts: 'Posts',
     tags: 'Tags',
     about: 'About',
+    gallery: 'Gallery',
+    galleryEmpty: 'No images yet.',
+    galleryBack: 'Back to gallery',
     toc: 'Table of Contents',
   },
   'es': {
@@ -36,6 +45,9 @@ export const ui: Record<Language, Translation> = {
     posts: 'Artículos',
     tags: 'Etiquetas',
     about: 'Sobre',
+    gallery: 'Galería',
+    galleryEmpty: 'Todavía no hay imágenes.',
+    galleryBack: 'Volver a la galería',
     toc: 'Índice',
   },
   'fr': {
@@ -45,6 +57,9 @@ export const ui: Record<Language, Translation> = {
     posts: 'Articles',
     tags: 'Étiquettes',
     about: 'À propos',
+    gallery: 'Galerie',
+    galleryEmpty: 'Aucune image pour le moment.',
+    galleryBack: 'Retour à la galerie',
     toc: 'Table des matières',
   },
   'ja': {
@@ -54,6 +69,9 @@ export const ui: Record<Language, Translation> = {
     posts: '記事',
     tags: 'タグ',
     about: '概要',
+    gallery: 'ギャラリー',
+    galleryEmpty: 'まだ画像はありません。',
+    galleryBack: 'ギャラリーに戻る',
     toc: '目次',
   },
   'ko': {
@@ -63,6 +81,9 @@ export const ui: Record<Language, Translation> = {
     posts: '게시물',
     tags: '태그',
     about: '소개',
+    gallery: '갤러리',
+    galleryEmpty: '아직 이미지가 없습니다.',
+    galleryBack: '갤러리로 돌아가기',
     toc: '목차',
   },
   'pl': {
@@ -72,6 +93,9 @@ export const ui: Record<Language, Translation> = {
     posts: 'Artykuły',
     tags: 'Tagi',
     about: 'O stronie',
+    gallery: 'Galeria',
+    galleryEmpty: 'Brak obrazów.',
+    galleryBack: 'Powrót do galerii',
     toc: 'Spis treści',
   },
   'pt': {
@@ -81,6 +105,9 @@ export const ui: Record<Language, Translation> = {
     posts: 'Artigos',
     tags: 'Tags',
     about: 'Sobre',
+    gallery: 'Galeria',
+    galleryEmpty: 'Ainda não há imagens.',
+    galleryBack: 'Voltar à galeria',
     toc: 'Sumário',
   },
   'ru': {
@@ -90,6 +117,9 @@ export const ui: Record<Language, Translation> = {
     posts: 'Посты',
     tags: 'Теги',
     about: 'О себе',
+    gallery: 'Галерея',
+    galleryEmpty: 'Изображений пока нет.',
+    galleryBack: 'Назад в галерею',
     toc: 'Оглавление',
   },
   'zh': {
@@ -99,6 +129,9 @@ export const ui: Record<Language, Translation> = {
     posts: '文章',
     tags: '标签',
     about: '关于',
+    gallery: '相册',
+    galleryEmpty: '暂无图片。',
+    galleryBack: '返回相册',
     toc: '目录',
   },
   'zh-tw': {
@@ -108,6 +141,9 @@ export const ui: Record<Language, Translation> = {
     posts: '文章',
     tags: '標籤',
     about: '關於',
+    gallery: '相簿',
+    galleryEmpty: '暫無圖片。',
+    galleryBack: '返回相簿',
     toc: '目錄',
   },
 }
