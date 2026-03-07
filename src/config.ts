@@ -82,10 +82,10 @@ export const themeConfig: ThemeConfig = {
     // giscus
     // https://giscus.app/
     giscus: {
-      repo: '',
-      repoId: '',
-      category: '',
-      categoryId: '',
+      repo: 'aBER0724/blog',
+      repoId: 'R_kgDORes-yg',
+      category: 'Comments',
+      categoryId: 'DIC_kwDORes-ys4C3w6S',
       mapping: 'pathname',
       strict: '0',
       reactionsEnabled: '1',

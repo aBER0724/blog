@@ -66,11 +66,11 @@ async function setupWaline() {
 
   try {
     const config = JSON.parse(walineContainer.dataset.config)
-    const { walineJS, walineCSS, el, ...restConfig } = config
+    const { walineJS, walineCSS, el: _el, ...restConfig } = config
     const { init } = await import(/* @vite-ignore */ walineJS)
 
     walineInstance = init({
-      el,
+      el: walineContainer,
       dark: 'html.dark',
       requiredMeta: ['nick', 'mail'],
       highlighter: false,
@@ -83,6 +83,41 @@ async function setupWaline() {
   catch (error) {
     console.error('[Waline] Failed to initialize:', error)
   }
+}
+
+function ensureWalineStyles(configJson: string) {
+  const config = JSON.parse(configJson)
+  const { walineCSS } = config
+
+  if (!document.getElementById('waline-css')) {
+    const link = document.createElement('link')
+    link.id = 'waline-css'
+    link.rel = 'stylesheet'
+    link.href = walineCSS
+    document.head.appendChild(link)
+  }
+}
+
+function observeWalineContainer(container: HTMLElement) {
+  walineContainer = container
+
+  const configJson = walineContainer.dataset.config
+  if (!configJson) {
+    return
+  }
+
+  ensureWalineStyles(configJson)
+
+  walineObserver?.disconnect()
+  walineObserver = new IntersectionObserver((entries) => {
+    if (entries.some(entry => entry.isIntersecting)) {
+      setupWaline()
+      walineObserver?.disconnect()
+      walineObserver = null
+    }
+  }, { rootMargin: '500px' })
+
+  walineObserver.observe(walineContainer)
 }
 
 // Lazy load Waline when the container enters viewport
@@ -98,33 +133,22 @@ function lazySetupWaline() {
     return
   }
 
-  walineContainer = container
+  observeWalineContainer(container)
+}
 
-  const configJson = walineContainer.dataset.config
-  if (!configJson) {
+function setupWalineForLightbox() {
+  const container = document.querySelector('[data-gallery-lightbox-comment-thread]:not([hidden]) [data-comment-provider="waline"]')
+  if (!(container instanceof HTMLElement) || !container.dataset.config) {
     return
   }
 
-  const config = JSON.parse(configJson)
-  const { walineCSS } = config
+  observeWalineContainer(container)
 
-  if (!document.getElementById('waline-css')) {
-    const link = document.createElement('link')
-    link.id = 'waline-css'
-    link.rel = 'stylesheet'
-    link.href = walineCSS
-    document.head.appendChild(link)
+  if (container.getBoundingClientRect().height > 0) {
+    setupWaline()
+    walineObserver?.disconnect()
+    walineObserver = null
   }
-
-  walineObserver = new IntersectionObserver((entries) => {
-    if (entries.some(entry => entry.isIntersecting)) {
-      setupWaline()
-      walineObserver?.disconnect()
-      walineObserver = null
-    }
-  }, { rootMargin: '500px' })
-
-  walineObserver.observe(walineContainer)
 }
 
 function cleanupWaline() {
@@ -137,6 +161,7 @@ function cleanupWaline() {
 
 document.addEventListener('astro:page-load', lazySetupWaline)
 document.addEventListener('astro:before-swap', cleanupWaline)
+document.addEventListener('gallery-lightbox:open', setupWalineForLightbox)
 </script>
 
 <!-- Official CSS Variables >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> -->

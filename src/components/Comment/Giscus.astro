@@ -51,7 +51,7 @@ const giscusConfig = {
 
 <div
   id={giscusContainerId}
-  class="giscus mt-16"
+  class="giscus-container mt-16"
   data-comment-provider="giscus"
   data-config={JSON.stringify(giscusConfig)}
 />
@@ -59,6 +59,8 @@ const giscusConfig = {
 <!-- Giscus Script >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> -->
 <script>
 let giscusContainer: HTMLElement | null = null
+let giscusResourcesPrewarmed = false
+let lightboxFrameSwapRequestId = 0
 
 function getThemeUrl() {
   const isDark = document.documentElement.classList.contains('dark')
@@ -67,40 +69,167 @@ function getThemeUrl() {
     : `https://cdn.jsdelivr.net/gh/radishzzz/astro-theme-retypeset@master/public/giscus/theme-light.css`
 }
 
-function updateGiscusTheme() {
-  if (!giscusContainer || !giscusContainer.dataset.config) {
+function ensureGiscusPrewarmLink() {
+  const href = getThemeUrl()
+  const existingLink = document.head.querySelector(`link[rel="preload"][as="style"][href="${href}"]`)
+  if (existingLink instanceof HTMLLinkElement) {
+    return existingLink
+  }
+
+  const link = document.createElement('link')
+  link.rel = 'preload'
+  link.as = 'style'
+  link.href = href
+  document.head.appendChild(link)
+  return link
+}
+
+function prewarmGiscusResources() {
+  if (giscusResourcesPrewarmed) {
     return
   }
 
-  const giscusWindow = giscusContainer.querySelector<HTMLIFrameElement>('iframe.giscus-frame')?.contentWindow
-  if (!giscusWindow) {
-    return
+  ensureGiscusPrewarmLink()
+
+  if (!document.head.querySelector('link[rel="preconnect"][href="https://giscus.app"]')) {
+    const giscusPreconnect = document.createElement('link')
+    giscusPreconnect.rel = 'preconnect'
+    giscusPreconnect.href = 'https://giscus.app'
+    document.head.appendChild(giscusPreconnect)
+  }
+
+  if (!document.head.querySelector('link[rel="preconnect"][href="https://github.githubassets.com"]')) {
+    const githubAssetsPreconnect = document.createElement('link')
+    githubAssetsPreconnect.rel = 'preconnect'
+    githubAssetsPreconnect.href = 'https://github.githubassets.com'
+    document.head.appendChild(githubAssetsPreconnect)
+  }
+
+  if (!document.head.querySelector('link[rel="preload"][as="script"][href="https://giscus.app/client.js"]')) {
+    const scriptPreload = document.createElement('link')
+    scriptPreload.rel = 'preload'
+    scriptPreload.as = 'script'
+    scriptPreload.href = 'https://giscus.app/client.js'
+    document.head.appendChild(scriptPreload)
+  }
+
+  giscusResourcesPrewarmed = true
+}
+
+function getVisibleLightboxGiscusContainer() {
+  const container = document.querySelector('[data-gallery-lightbox-comments] [data-comment-provider="giscus"]')
+  return container instanceof HTMLElement ? container : null
+}
+
+function getStandaloneGiscusContainer() {
+  const containers = Array.from(document.querySelectorAll('[data-comment-provider="giscus"]'))
+  return containers.find((container) => {
+    if (!(container instanceof HTMLElement)) {
+      return false
+    }
+
+    return !container.closest('[data-gallery-lightbox-comments]')
+  }) ?? null
+}
+
+function updateGiscusTerm(container: HTMLElement) {
+  const configJson = container.dataset.config
+  const activeIframe = giscusContainer?.querySelector<HTMLIFrameElement>('iframe.giscus-frame')
+
+  if (!configJson || !activeIframe) {
+    return false
   }
 
   try {
-    giscusWindow.postMessage(
-      { giscus: { setConfig: { theme: getThemeUrl() } } },
-      'https://giscus.app',
-    )
+    const config = JSON.parse(configJson)
+    const nextFrameUrl = new URL(`https://giscus.app/${config.lang}/widget`)
+    nextFrameUrl.searchParams.set('origin', `${window.location.href}#${container.id || 'giscus-lightbox'}`)
+    nextFrameUrl.searchParams.set('session', '')
+    nextFrameUrl.searchParams.set('theme', getThemeUrl())
+    nextFrameUrl.searchParams.set('reactionsEnabled', config.reactionsEnabled)
+    nextFrameUrl.searchParams.set('emitMetadata', config.emitMetadata)
+    nextFrameUrl.searchParams.set('inputPosition', config.inputPosition)
+    nextFrameUrl.searchParams.set('repo', config.repo)
+    nextFrameUrl.searchParams.set('repoId', config.repoId)
+    nextFrameUrl.searchParams.set('category', config.category)
+    nextFrameUrl.searchParams.set('categoryId', config.categoryId)
+    nextFrameUrl.searchParams.set('strict', config.strict)
+    nextFrameUrl.searchParams.set('description', document.title)
+    nextFrameUrl.searchParams.set('backLink', window.location.href)
+    nextFrameUrl.searchParams.set('term', config.term)
+
+    if (activeIframe.src === nextFrameUrl.toString()) {
+      return true
+    }
+
+    const requestId = ++lightboxFrameSwapRequestId
+    const nextIframe = activeIframe.cloneNode(false)
+    if (!(nextIframe instanceof HTMLIFrameElement)) {
+      return false
+    }
+
+    nextIframe.className = activeIframe.className
+    nextIframe.title = activeIframe.title
+    nextIframe.width = activeIframe.width
+    nextIframe.height = activeIframe.height
+    nextIframe.loading = activeIframe.loading
+    nextIframe.hidden = true
+    nextIframe.setAttribute('aria-hidden', 'true')
+    nextIframe.src = nextFrameUrl.toString()
+
+    nextIframe.addEventListener('load', () => {
+      if (requestId !== lightboxFrameSwapRequestId || !giscusContainer?.isConnected || nextIframe.parentElement !== giscusContainer) {
+        nextIframe.remove()
+        return
+      }
+
+      activeIframe.remove()
+      nextIframe.hidden = false
+      nextIframe.removeAttribute('aria-hidden')
+    }, { once: true })
+
+    const currentContainer = giscusContainer
+    if (!currentContainer || activeIframe.parentElement !== currentContainer) {
+      return false
+    }
+
+    activeIframe.remove()
+    currentContainer.appendChild(nextIframe)
+    return true
   }
   catch (error) {
-    console.error('[Giscus] Failed to update theme:', error)
+    console.error('[Giscus] updateGiscusTerm failed:', error)
+    return false
   }
 }
 
-function setupGiscus() {
-  const script = document.currentScript
-  const container = script?.previousElementSibling
+function initializeGiscusContainer(container: Element | null | undefined) {
   if (
-    !(script instanceof HTMLScriptElement)
-    || !(container instanceof HTMLElement)
+    !(container instanceof HTMLElement)
     || container.dataset.commentProvider !== 'giscus'
     || !container.dataset.config
   ) {
     return
   }
 
+  if (container.querySelector('iframe.giscus-frame, .giscus-frame')) {
+    giscusContainer = container
+    giscusContainer.classList.add('giscus')
+
+    if (container.closest('[data-gallery-lightbox-comments]')) {
+      updateGiscusTerm(container)
+    }
+
+    return
+  }
+
+  if (giscusContainer && giscusContainer !== container) {
+    giscusContainer.innerHTML = ''
+    giscusContainer.classList.remove('giscus')
+  }
+
   giscusContainer = container
+  giscusContainer.classList.add('giscus')
   giscusContainer.innerHTML = ''
 
   const configJson = giscusContainer.dataset.config
@@ -130,9 +259,39 @@ function setupGiscus() {
   }
 }
 
+function updateGiscusTheme() {
+  if (!giscusContainer || !giscusContainer.dataset.config) {
+    return
+  }
+
+  const giscusWindow = giscusContainer.querySelector<HTMLIFrameElement>('iframe.giscus-frame')?.contentWindow
+  if (!giscusWindow) {
+    return
+  }
+
+  try {
+    giscusWindow.postMessage(
+      { giscus: { setConfig: { theme: getThemeUrl() } } },
+      'https://giscus.app',
+    )
+  }
+  catch (error) {
+    console.error('[Giscus] Failed to update theme:', error)
+  }
+}
+
+function setupGiscus() {
+  initializeGiscusContainer(getStandaloneGiscusContainer())
+}
+
+function setupGiscusForLightbox() {
+  initializeGiscusContainer(getVisibleLightboxGiscusContainer())
+}
+
 function cleanupGiscus() {
   if (giscusContainer) {
     giscusContainer.innerHTML = ''
+    giscusContainer.classList.remove('giscus')
     giscusContainer = null
   }
 }
@@ -140,4 +299,15 @@ function cleanupGiscus() {
 document.addEventListener('astro:page-load', setupGiscus)
 document.addEventListener('astro:before-swap', cleanupGiscus)
 document.addEventListener('theme-changed', updateGiscusTheme)
+document.addEventListener('gallery-lightbox:open', setupGiscusForLightbox)
+window.addEventListener('load', prewarmGiscusResources)
+
+const galleryItems = Array.from(document.querySelectorAll('[data-gallery-trigger]')).filter(
+  trigger => trigger instanceof HTMLButtonElement,
+)
+
+galleryItems.forEach((trigger) => {
+  trigger.addEventListener('pointerenter', prewarmGiscusResources)
+  trigger.addEventListener('focus', prewarmGiscusResources)
+})
 </script>
