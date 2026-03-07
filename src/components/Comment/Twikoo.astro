@@ -4,12 +4,18 @@ import twikooJS from 'twikoo/dist/twikoo.nocss.js?url' // Using twikoo.min.js ca
 import { allLocales, base, defaultLocale, themeConfig } from '@/config'
 import { twikooLocaleMap } from '@/i18n/config'
 
+interface Props {
+  path?: string
+  instanceId?: string
+}
+
 const { envId = '' } = themeConfig.comment.twikoo ?? {}
+const { path, instanceId } = Astro.props as Props
 
 // Remove locale prefix from path
 const currentPath = Astro.url.pathname
 const localePattern = new RegExp(`\\/(${allLocales.join('|')})\\/`)
-const twikooPath = currentPath.replace(localePattern, '/')
+const twikooPath = path ?? currentPath.replace(localePattern, '/')
 
 // Determine language
 const pathWithoutBase = base && currentPath.startsWith(base)
@@ -18,21 +24,25 @@ const pathWithoutBase = base && currentPath.startsWith(base)
 const matchedLang = Object.keys(twikooLocaleMap).find(code => pathWithoutBase.startsWith(`/${code}/`))
 const lang = (matchedLang ?? defaultLocale) as keyof typeof twikooLocaleMap
 
+const twikooWrapperId = instanceId ? `twikoo-wrapper-${instanceId}` : 'twikoo-wrapper'
+const twikooId = instanceId ? `twikoo-${instanceId}` : 'twikoo'
 const twikooConfig = {
   envId,
   path: twikooPath,
   lang: twikooLocaleMap[lang],
   twikooCSS,
+  el: `#${twikooId}`,
 }
 ---
 
 <!-- Class not working on twikoo div -->
 <div
-  id="twikoo-wrapper"
+  id={twikooWrapperId}
   class="no-heti mt-16"
+  data-comment-provider="twikoo"
   data-config={JSON.stringify(twikooConfig)}
 >
-  <div id="twikoo" />
+  <div id={twikooId} />
 </div>
 
 <!-- Twikoo Script >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> -->
@@ -48,18 +58,17 @@ let twikooObserver: IntersectionObserver | null = null
 let twikooWrapper: HTMLElement | null = null
 
 function setupTwikoo() {
-  const twikooWrapper = document.getElementById('twikoo-wrapper')
   if (!twikooWrapper || !twikooWrapper.dataset.config) {
     return
   }
 
   try {
     const config = JSON.parse(twikooWrapper.dataset.config)
-    const { envId, path, lang } = config
+    const { envId, path, lang, el } = config
 
     twikoo.init({
       envId,
-      el: '#twikoo',
+      el,
       // region: 'ap-shanghai', // Specify for Tencent Cloud, omit for Vercel
       path,
       lang,
@@ -72,12 +81,25 @@ function setupTwikoo() {
 
 // Lazy load Twikoo when the wrapper enters viewport
 function lazySetupTwikoo() {
-  twikooWrapper = document.getElementById('twikoo-wrapper')
-  if (!twikooWrapper || !twikooWrapper.dataset.config) {
+  const script = document.currentScript
+  const wrapper = script?.previousElementSibling
+  if (
+    !(script instanceof HTMLScriptElement)
+    || !(wrapper instanceof HTMLElement)
+    || wrapper.dataset.commentProvider !== 'twikoo'
+    || !wrapper.dataset.config
+  ) {
     return
   }
 
-  const config = JSON.parse(twikooWrapper.dataset.config)
+  twikooWrapper = wrapper
+
+  const configJson = twikooWrapper.dataset.config
+  if (!configJson) {
+    return
+  }
+
+  const config = JSON.parse(configJson)
   const { twikooCSS } = config
 
   if (!document.getElementById('twikoo-css')) {

@@ -1,0 +1,16 @@
+---
+import Giscus from '@/components/Comment/Giscus.astro'
+import { themeConfig } from '@/config'
+
+interface Props {
+  discussionTerm: string
+  instanceId?: string
+}
+
+const { discussionTerm, instanceId } = Astro.props as Props
+const { enabled: enableComment } = themeConfig.comment
+const giscusRepo = themeConfig.comment.giscus?.repo ?? ''
+const showGiscus = enableComment && Boolean(giscusRepo.trim())
+---
+
+{showGiscus && <Giscus discussionTerm={discussionTerm} instanceId={instanceId} />}
