@@ -16,7 +16,7 @@ export interface GalleryItem {
 }
 
 export function getGalleryImagePath(fileName: string) {
-  return `/gallery-assets/${fileName}`
+  return `/gallery-assets/${fileName}/`
 }
 
 interface GalleryMetadata {

@@ -107,6 +107,13 @@ function zoomOut() {
   zoomedImg.addEventListener('transitionend', cleanup, { once: true })
 }
 
+function shouldIgnoreImage(target: HTMLImageElement) {
+  return Boolean(
+    target.closest('[data-gallery-trigger]') ||
+    target.closest('[data-gallery-lightbox]'),
+  )
+}
+
 // Handle click events
 function handleClick(event: MouseEvent) {
   if (zoomedImg) {
@@ -116,6 +123,10 @@ function handleClick(event: MouseEvent) {
 
   const target = event.target
   if (!(target instanceof HTMLImageElement)) {
+    return
+  }
+
+  if (shouldIgnoreImage(target)) {
     return
   }
 
