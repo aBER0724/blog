@@ -100,6 +100,8 @@ const previousNavigationButton = getButtonByMarker('data-gallery-lightbox-previo
 const nextNavigationButton = getButtonByMarker('data-gallery-lightbox-next')
 const metaElement = getSectionByMarker('data-gallery-lightbox-meta')
 const panelScrollElement = getElementByMarker('data-gallery-lightbox-panel-scroll')
+const lightboxDialogClassTokens = getClassTokens(lightboxDialogElement, 'the lightbox dialog')
+const panelScrollClassTokens = getClassTokens(panelScrollElement, 'the lightbox panel scroll container')
 
 const openLightboxStart = html.match(/function openLightbox\([^)]*\)\{/)
 const closeLightboxStart = html.match(/function closeLightbox\(\)\{/)
@@ -133,6 +135,13 @@ assert.match(
   'gallery index should render the lightbox description inside the metadata panel',
 )
 
+const metaClassTokens = getClassTokens(metaElement, 'the lightbox metadata panel')
+
+assert.ok(
+  metaClassTokens.includes('shrink-0'),
+  'gallery index should prevent the metadata panel from shrinking in the right-side flex column so long descriptions stay inside the metadata block instead of overflowing into the comments area',
+)
+
 assert.match(
   html,
   /lg:grid-cols-\[minmax\(0,2fr\)_minmax\(20rem,1fr\)\]/,
@@ -163,22 +172,75 @@ assert.match(
   'gallery index should remove the overlay flex class when closing the lightbox so the closed state does not leave a blocking layer behind',
 )
 
-assert.match(
-  lightboxDialogElement,
-  /bg-(?:background|secondary\/5)/,
-  'gallery index should render the lightbox dialog with a generated theme background utility so the metadata panel remains visually separated from the page behind it',
+assert.ok(
+  !lightboxDialogClassTokens.some(token => token.startsWith('bg-secondary/')),
+  'gallery index should not render the lightbox dialog with a bg-secondary/* utility because secondary is a text color token and makes the dialog wash out in dark mode',
 )
 
-assert.match(
-  panelScrollElement,
-  /bg-(?:background|secondary\/10|background\/95)/,
-  'gallery index should render the right panel with a visibly distinct generated theme background utility',
+assert.ok(
+  !panelScrollClassTokens.some(token => token.startsWith('bg-secondary/')),
+  'gallery index should not render the right panel with a bg-secondary/* utility because secondary is a text color token and makes the metadata panel wash out in dark mode',
 )
 
-assert.match(
-  panelScrollElement,
-  /lg:overflow-y-auto/,
-  'gallery index should make the right panel itself scrollable on large screens',
+assert.ok(
+  lightboxDialogClassTokens.some(token => token === 'bg-background' || token === 'bg-background/95' || token.startsWith('dark:bg-')),
+  'gallery index should render the lightbox dialog with a surface utility that is based on a real background/surface token rather than a text color token',
+)
+
+assert.ok(
+  !panelScrollClassTokens.some(token => token === 'bg-background' || token === 'bg-background/95' || token.startsWith('dark:bg-') || token.startsWith('bg-')),
+  'gallery index should not render the right metadata panel with its own background utility because it should reuse the lightbox dialog background',
+)
+
+assert.ok(
+  !lightboxDialogClassTokens.includes('border') && !lightboxDialogClassTokens.some(token => token.startsWith('border-')),
+  'gallery index should not render the lightbox dialog with an explicit border because the lightbox surface should stay clean in dark mode',
+)
+
+assert.ok(
+  !panelScrollClassTokens.includes('border') && !panelScrollClassTokens.some(token => token.startsWith('border-')),
+  'gallery index should not render the right metadata panel with an explicit border because the panel should blend into the lightbox surface',
+)
+
+assert.ok(
+  !panelScrollClassTokens.some(token => token === 'bg-background' || token === 'bg-background/95' || token.startsWith('dark:bg-') || token.startsWith('bg-')),
+  'gallery index should not render the right metadata panel with its own background utility because it should reuse the lightbox dialog background',
+)
+
+assert.ok(
+  panelScrollClassTokens.includes('overflow-y-auto'),
+  'gallery index should keep the right panel scrollable on smaller screens so metadata and comments remain reachable inside the fixed-height lightbox',
+)
+
+const commentsScrollElement = getDivByMarker('data-gallery-lightbox-comments-scroll')
+const commentsScrollClassTokens = getClassTokens(commentsScrollElement, 'the lightbox comments scroll container')
+
+assert.ok(
+  commentsScrollClassTokens.includes('scrollbar-hidden') && commentsScrollClassTokens.includes('overflow-y-auto'),
+  'gallery index should hide the visible scrollbar on the lightbox comments scroll container while preserving its scrolling behavior',
+)
+
+assert.ok(
+  commentsScrollClassTokens.includes('overflow-x-hidden'),
+  'gallery index should clip comment content to the comments scroll container bounds so desktop scrolling does not let the Giscus iframe visually bleed upward into the metadata area',
+)
+
+const commentsSectionElement = getSectionByMarker('data-gallery-lightbox-comments')
+const commentsSectionClassTokens = getClassTokens(commentsSectionElement, 'the lightbox comments section')
+
+assert.ok(
+  commentsSectionClassTokens.includes('overflow-hidden'),
+  'gallery index should clip the entire comments region so the scrolling Giscus iframe cannot paint upward into the metadata block on desktop',
+)
+
+assert.ok(
+  commentsSectionClassTokens.includes('pt-6'),
+  'gallery index should keep a fixed top gap above the comments scroll area so desktop comment content does not visually press against the metadata block when the thread is scrolled',
+)
+
+assert.ok(
+  !commentsScrollClassTokens.includes('pt-6'),
+  'gallery index should not place the top gap inside the scrolling comments container because that spacing disappears as soon as the discussion thread scrolls',
 )
 
 assert.match(
